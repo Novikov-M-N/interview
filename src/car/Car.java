@@ -1,15 +1,29 @@
 package car;
 
+/**
+ * В класс имеет смысл добавить конструктор, т.к. двигатель, цвет и название определяются сразу
+ * при создании машины и редко меняются в течение её жизненного цикла.
+ */
 public abstract class Car {
-    public Engine engine;
+    private Engine engine; // Делаем полностью приватным, т.к. в наследниках не используется
     private String color;
     private String name;
 
-    protected void start() {
+    public Car(Engine engine, String color, String name) {
+        this.engine = engine;
+        this.color = color;
+        this.name = name;
+    }
+
+    // Данный метод нужно сделать публичным, т.к. машину требуется запускать кому-то извне (ключ, брелок, кнопка),
+    // а не только самой машине (автозапуск).
+    public void start() {
+        // Функция запуска машины, по логике, должна запускать двигатель
+        engine.start();
         System.out.println("Car starting");
     }
 
-    abstract void open();
+    public abstract void open(); // Делаем доступным снаружи, т.к. открывать машину должна мочь не только сама машина
 
     public Engine getEngine() {
         return engine;
