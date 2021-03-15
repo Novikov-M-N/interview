@@ -2,11 +2,11 @@ package pingpong;
 
 public class Sender implements Runnable{
     private final String message;
-    private final Writer locker;
+    private final Writer writer;
 
-    public Sender(String message, Writer locker) {
+    public Sender(String message, Writer writer) {
         this.message = message;
-        this.locker = locker;
+        this.writer = writer;
         new Thread(this).start();
     }
 
@@ -14,7 +14,7 @@ public class Sender implements Runnable{
     public void run() {
         for (int i = 0; i < 10; i++) {
             int delay = (int)((Math.random() * 1500) + 100);
-            locker.write(message);
+            writer.write(message);
             try {
                 Thread.sleep(delay);
             } catch (InterruptedException e) {

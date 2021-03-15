@@ -21,9 +21,8 @@ public class Main {
 
         // Задание 2 - потокобезопасный счётчик через интерфейс Lock
         Counter counter = new Counter();
-        Lock lock = new ReentrantLock();
         for (int i = 0; i < 10; i++) {
-            new Starter(i, counter, lock);
+            new Starter(i, counter);
         }
     }
 }
