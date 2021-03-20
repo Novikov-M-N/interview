@@ -1,0 +1,72 @@
+-- Запрос 1 - Ошибки в расписании - наложение сеансов друг на друга в порядке убывания времени коллизии
+SELECT
+    movie.title AS title1,
+    session.start_time AS start_time1,
+    movie.duration AS duration1,
+    session_data2.title AS title2,
+    session_data2.start_time AS start_time2,
+    session_data2.duration AS duration2,
+    time_to_sec(timediff(session.start_time, session_data2.start_time))/60 + movie.duration AS collision_minutes
+FROM
+    cinema.movie movie,
+    cinema.session session,
+    (SELECT
+        movie.title AS title,
+        session.start_time AS start_time,
+        movie.duration AS duration
+    FROM
+        cinema.movie movie,
+        cinema.session session
+    WHERE
+        session.movie = movie.id) AS session_data2
+WHERE
+    session.movie = movie.id
+AND
+    timediff(session_data2.start_time, session.start_time) > 0
+AND
+    time_to_sec(timediff(session_data2.start_time, session.start_time)) < movie.duration * 60
+ORDER BY
+    collision_minutes ASC;
+
+-- Запрос 2 - Перерывы более тридцати минут между фильмами в порядке возрастания времени перерыва. Наложения сеансов не учитываются
+SELECT
+	select1.title AS title,
+    select1.start1 AS start1,
+    select1.duration AS duration,
+    session2.start_time as start2,
+    select1.break_minutes as break_minutes
+FROM
+	(SELECT
+		session1.title AS title,
+		session1.start_time AS start1,
+		session1.duration AS duration,
+		-- session2.start_time AS start2,
+		min(time_to_sec(timediff(session2.start_time, session1.start_time))/60 - session1.duration) AS break_minutes
+	FROM
+		(SELECT
+			session.id AS id,
+			movie.title AS title,
+			session.start_time AS start_time,
+			movie.duration AS duration
+		FROM
+			cinema.movie movie,
+			cinema.session session
+		WHERE
+			session.movie = movie.id) AS session1,
+		(SELECT
+			session.start_time AS start_time
+		FROM
+			cinema.session session) AS session2
+	WHERE
+		time_to_sec(timediff(session2.start_time, session1.start_time))/60 - session1.duration > 0
+	GROUP BY session1.id
+	ORDER BY session1.id) AS select1,
+    cinema.session AS session2
+WHERE
+	time_to_sec(timediff(session2.start_time, select1.start1))/60 - select1.duration = select1.break_minutes
+AND
+	day(session2.start_time) = day(select1.start1)
+AND
+	select1.break_minutes > 30
+ORDER BY
+	break_minutes ASC;
