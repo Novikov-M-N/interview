@@ -1,0 +1,10 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /app
+spring:
+  # без БД запуститься не даёт. Но в приложении она не используется.
+  datasource:
+    url: jdbc:postgresql://localhost:5432/geek
+    username: geek
+    password: geek
