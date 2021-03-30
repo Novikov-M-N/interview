@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Список студентов</title>
+</head>
+<body>
+<h2>Список студентов</h2>
+<a th:each="student : ${students}">
+    <p th:text="|${student.name} : ${student.age}|"/>
+</a>
+</body>
+</html>
